@@ -99,5 +99,5 @@ pub fn get_top_20_craftsmen(
         },
     }    
 
-    craftmen_response.into_iter().skip(page_query.page * 20).take((page_query.page + 1) * 20).collect()
+    craftmen_response.into_iter().skip(page_query.page.unwrap() * 20).take((page_query.page.unwrap() + 1usize) * 20).collect()
 }

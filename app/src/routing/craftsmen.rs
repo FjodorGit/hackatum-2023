@@ -22,7 +22,7 @@ pub enum SortBy {
 #[derive(Deserialize)]
 pub struct PostalCodeQuery {
     pub postalcode: String,
-    pub page: Option<String>,
+    pub page: Option<usize>,
     pub sort_by: Option<SortBy>,
 }
 

@@ -82,7 +82,7 @@
                     <span>{craftsman.name}</span>
                 </div>
         
-                <div class="inline-grid w-min" style="--rating: {craftsman.rankingScore / 0.03}%;">
+                <div class="inline-grid w-min" style="--rating: {craftsman.profile_score / 0.03}%;">
                     <div class="text-gray-400 col-[1] row-[1] w-full text-lg">
                         <span>★★★★★</span>
                     </div>
