@@ -1,14 +1,5 @@
 version: "3"
 services:
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
-    environment:
-      PORT: 2000
-    ports:
-      - "3001:2000"
-
   backend:
     build:
       context: .
@@ -18,7 +9,14 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:jdiesel@postgres:5432/HACKDB
     ports:
-      - "3000:8080"
+      - "8080:8080" # Adjust the port as needed
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000" # Adjust the port as needed
 
   postgres:
     image: postgres:latest

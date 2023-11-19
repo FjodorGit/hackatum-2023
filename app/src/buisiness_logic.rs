@@ -1,5 +1,6 @@
 use crate::model::postcode::Postcode;
 use crate::routing::craftsmen::PostalCodeQuery;
+use crate::routing::craftsmen::SortBy;
 use crate::schema::postcode::dsl::*;
 use crate::schema::service_provider_profile::dsl::*;
 use crate::{
@@ -7,7 +8,6 @@ use crate::{
 };
 use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl};
 use serde::{Deserialize, Serialize};
-use crate::routing::craftsmen::SortBy;
 
 #[derive(Serialize, Deserialize)]
 pub struct CraftmanResponse {
@@ -67,28 +67,33 @@ pub fn get_top_20_craftsmen(
 
     let mut craftmen_response: Vec<CraftmanResponse> = available_craftsmen
         .into_iter()
-        .map(|c: ServiceProviderProfile| 
-            {let profilescore_distance_rank = c.calculate_profilescore_distance_rank(postcode_struct.lon, postcode_struct.lat, connection);
+        .map(|c: ServiceProviderProfile| {
+            let profilescore_distance_rank = c.calculate_profilescore_distance_rank(
+                postcode_struct.lon,
+                postcode_struct.lat,
+                connection,
+            );
             CraftmanResponse {
-            id: c.id,
-            name: format!(
-                "{} {}",
-                c.first_name.as_ref().unwrap(),
-                c.last_name.as_ref().unwrap()
-            ),
-            profile_score: profilescore_distance_rank.0,
-            distance: profilescore_distance_rank.1,
-            rankingScore: profilescore_distance_rank.2,
-            }})
+                id: c.id,
+                name: format!(
+                    "{} {}",
+                    c.first_name.as_ref().unwrap(),
+                    c.last_name.as_ref().unwrap()
+                ),
+                profile_score: profilescore_distance_rank.0,
+                distance: profilescore_distance_rank.1,
+                rankingScore: profilescore_distance_rank.2,
+            }
+        })
         .collect();
-    
     match page_query.sort_by.unwrap() {
         SortBy::Distance => {
             craftmen_response.sort_unstable_by(|a, b| a.distance.partial_cmp(&b.distance).unwrap());
-        },
+        }
         SortBy::Profile => {
-            craftmen_response.sort_unstable_by(|a, b| b.profile_score.partial_cmp(&a.profile_score).unwrap());
-        },
+            craftmen_response
+                .sort_unstable_by(|a, b| b.profile_score.partial_cmp(&a.profile_score).unwrap());
+        }
         SortBy::Default => {
             craftmen_response.sort_unstable_by(|a, b| {
                 a.rankingScore
@@ -96,8 +101,12 @@ pub fn get_top_20_craftsmen(
                     .unwrap()
                     .reverse()
             });
-        },
-    }    
+        }
+    }
 
-    craftmen_response.into_iter().skip(page_query.page.unwrap() * 20).take((page_query.page.unwrap() + 1usize) * 20).collect()
+    craftmen_response
+        .into_iter()
+        .skip(page_query.page.unwrap() * 20)
+        .take((page_query.page.unwrap() + 1usize) * 20)
+        .collect()
 }

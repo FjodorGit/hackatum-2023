@@ -35,7 +35,12 @@ pub struct ServiceProviderProfile {
 }
 
 impl ServiceProviderProfile {
-    pub fn calculate_profilescore_distance_rank(&self, lon: f64, lat: f64, connection: &mut PgConnection) -> (f64, f64, f64) {
+    pub fn calculate_profilescore_distance_rank(
+        &self,
+        lon: f64,
+        lat: f64,
+        connection: &mut PgConnection,
+    ) -> (f64, f64, f64) {
         // :returns tuple of (profile_score, distance, rank)
         let quality_factor: NewQualityFactorScore = quality_factor_score
             .filter(
@@ -45,16 +50,21 @@ impl ServiceProviderProfile {
             .first(connection)
             .expect("Failed to calculate score from profile");
 
-
         let distance = self.calculate_distance(lon, lat);
-        let distance_score = 1.0 - distance / 80.0;
+        let distance_score = 1.0 - (distance / 80.0);
 
         let distance_weight = match distance > 80.0 {
             true => 0.01,
             false => 0.15,
         };
+        let ranking_score = distance_weight * distance_score
+            + (1.0 - distance_weight) * quality_factor.profile_score.unwrap();
 
-       (quality_factor.profile_score.unwrap(), distance, distance_weight * distance_score + (1.0 - distance_weight) * quality_factor.profile_score.unwrap())
+        (
+            quality_factor.profile_score.unwrap(),
+            distance,
+            ranking_score,
+        )
     }
 
     fn calculate_distance(&self, another_lon: f64, another_lat: f64) -> f64 {
