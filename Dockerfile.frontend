@@ -1,19 +1,18 @@
-FROM node:latest 
+# Use the Node.js image as the base image for the frontend
+FROM node:latest as frontend
 
-WORKDIR /app
-COPY ./check24-hackatum-client /app/frontend
-COPY .env.docker /app/.env
-COPY --from=backend /app/backend /app/backend
-
-
+# Set the working directory to /app
 WORKDIR /app/frontend
-RUN npm install 
-RUN npm i -D @sveltejs/adapter-node
-RUN npm run build
 
+# Copy the frontend source code into the container
+COPY ./check24-hackatum-client /app/frontend
 
-# Build the Rust application
-EXPOSE 2000
-# Set up and run migrations when the container starts
-ENTRYPOINT["node", "build"]
+# Install dependencies
+RUN npm install
+
+# Expose the port on which the Svelte app will run
+EXPOSE 3000
+
+# Start the Svelte development server
+CMD npm run dev -- --host 0.0.0.0
 

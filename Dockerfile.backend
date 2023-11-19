@@ -1,21 +1,22 @@
-FROM rust:latest
+# Use the Rust image as the base image
+FROM rust:latest as backend
 
-RUN apt-get update && \
-    apt-get -y upgrade && \
-    apt-get -y install libpq-dev postgresql
-
-WORKDIR /app/backend
-COPY .env.docker /app/.env
-COPY ./app/ /app/backend
-
-# Add wait-for-it script
-ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /usr/wait-for-it.sh
-RUN chmod +x /usr/wait-for-it.sh
-
+# Install system dependencies
+RUN apt-get update && apt-get install -y libpq-dev
 RUN cargo install diesel_cli --no-default-features --features postgres
-RUN cargo build --release
-RUN diesel setup
+
+# Set the working directory to /app
+WORKDIR /app/backend
+
+# Copy the backend source code into the container
+COPY ./app /app/backend
 
 # Build the Rust application
-CMD /usr/wait-for-it.sh postgres:5432 --timeout=5 && ./target/release/app
+RUN cargo build --release
+
+# Expose the port on which the Actix server will run
+EXPOSE 8080
+
+# Set up and run migrations when the container starts
+CMD diesel setup && diesel migration run && ./target/release/app
 
