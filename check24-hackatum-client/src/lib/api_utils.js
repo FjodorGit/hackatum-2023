@@ -7,6 +7,7 @@ async function api_fetch(domain, url_appendix, method = "GET", body = {}) {
   };
   if (Object.keys(body).length !== 0) {
     params["body"] = JSON.stringify(body);
+    params['headers'] = new Headers({'content-type': 'application/json'})
   }
 
   let response = await fetch(url, (params = params));
@@ -41,7 +42,7 @@ export async function update_craftsman(
   profilePictureScore,
   profileDescriptionScore
 ) {
-  await api_fetch(domain, `craftman/${id}`, "PATCH", {
+  await api_fetch(domain, `craftmen/${id}`, "PATCH", {
     maxDrivingDistance: maxDrivingDistance,
     profilePictureScore: profilePictureScore,
     profileDescriptionScore: profileDescriptionScore,

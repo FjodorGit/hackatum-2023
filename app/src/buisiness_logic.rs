@@ -86,18 +86,13 @@ pub fn get_top_20_craftsmen(
             }
         })
         .collect();
-
     match page_query.sort_by.unwrap() {
         SortBy::Distance => {
             craftmen_response.sort_unstable_by(|a, b| a.distance.partial_cmp(&b.distance).unwrap());
         }
         SortBy::Profile => {
-            craftmen_response.sort_unstable_by(|a, b| {
-                b.profile_score
-                    .partial_cmp(&a.profile_score)
-                    .unwrap()
-                    .reverse()
-            });
+            craftmen_response
+                .sort_unstable_by(|a, b| b.profile_score.partial_cmp(&a.profile_score).unwrap());
         }
         SortBy::Default => {
             craftmen_response.sort_unstable_by(|a, b| {
@@ -109,5 +104,9 @@ pub fn get_top_20_craftsmen(
         }
     }
 
-    craftmen_response.into_iter().take(20).collect()
+    craftmen_response
+        .into_iter()
+        .skip(page_query.page.unwrap() * 20)
+        .take((page_query.page.unwrap() + 1usize) * 20)
+        .collect()
 }

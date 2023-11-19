@@ -5,6 +5,7 @@
     import { fetch_craftsmen } from '$lib/api_utils.js';
     import { admin_mode } from '$lib/stores.js';
     import { goto } from '$app/navigation';
+    import { fade } from 'svelte/transition';
 
     export let data;
     let sort_by = 'default';
@@ -23,7 +24,7 @@
         }
     }
 
-    $: load_craftsmen_wrapper(data.plz, page_counter);
+    $: load_craftsmen_wrapper(data.plz, page_counter, sort_by);
     $: sort_by, page_counter=0;
 </script>
 
@@ -76,12 +77,12 @@
         <div class="relative flex flex-col gap-1 bg-white rounded-md p-2">
             <div class="flex flex-col sm:flex-row gap-1 xs:max-sm:justify-center sm:items-center">
                 <div class="inline-flex flex-row gap-1 items-center">
-                    <span class="py-1 px-2 bg-24-blue text-white rounded-md mr-1">{craftsman.rankingScore.toFixed(1)}</span>
+                    <span class="py-1 px-2 bg-24-blue text-white rounded-md mr-1">{craftsman.profile_score.toFixed(1)}</span>
                     
                     <span>{craftsman.name}</span>
                 </div>
         
-                <div class="inline-grid w-min" style="--rating: {craftsman.rankingScore / 0.03}%;">
+                <div class="inline-grid w-min" style="--rating: {craftsman.profile_score / 0.03}%;">
                     <div class="text-gray-400 col-[1] row-[1] w-full text-lg">
                         <span>★★★★★</span>
                     </div>
@@ -95,7 +96,7 @@
                 <span class="text-sm">{Math.round(craftsman.distance * 10) / 10} km entfernt</span>
             </div>
             {#if $admin_mode}
-                <button on:click={() => {goto('/update/' + craftsman.id)}} class="py-1 px-2 bg-24-blue rounded-bl-md rounded-tr-md absolute top-0 right-0">
+                <button transition:fade={{duration: 100}} on:click={() => {goto('/update/' + craftsman.id)}} class="py-1 px-2 bg-24-blue rounded-bl-md rounded-tr-md absolute top-0 right-0">
                     <span class="material-symbols-rounded text-lg text-white">edit_square</span>
                 </button>    
             {/if}
