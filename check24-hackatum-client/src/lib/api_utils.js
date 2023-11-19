@@ -6,7 +6,8 @@ async function api_fetch(domain, url_appendix, method = "GET", body = {}) {
     method: method,
   };
   if (Object.keys(body).length !== 0) {
-    params["json"] = body;
+    params["body"] = JSON.stringify(body);
+    params['headers'] = new Headers({'content-type': 'application/json'})
   }
 
   let response = await fetch(url, (params = params));

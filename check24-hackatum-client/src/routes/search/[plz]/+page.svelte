@@ -77,7 +77,7 @@
         <div class="relative flex flex-col gap-1 bg-white rounded-md p-2">
             <div class="flex flex-col sm:flex-row gap-1 xs:max-sm:justify-center sm:items-center">
                 <div class="inline-flex flex-row gap-1 items-center">
-                    <span class="py-1 px-2 bg-24-blue text-white rounded-md mr-1">{craftsman.rankingScore.toFixed(1)}</span>
+                    <span class="py-1 px-2 bg-24-blue text-white rounded-md mr-1">{craftsman.profile_score.toFixed(1)}</span>
                     
                     <span>{craftsman.name}</span>
                 </div>
